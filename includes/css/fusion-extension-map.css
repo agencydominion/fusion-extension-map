@@ -1,0 +1,9 @@
+/**
+ * Styles for Fusion Extension - Map
+ */
+ 
+.fsn-map.google_map_embed > .fsn-googlemap_container > iframe	{
+	width:100%;
+	max-width:100%;
+	height:inherit;
+}
