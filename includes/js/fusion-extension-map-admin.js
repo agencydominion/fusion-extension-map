@@ -68,10 +68,15 @@ function fsnUpdateMapLayout() {
 				tabPane.find('.layout-fields:empty').remove();
 			});
 		}
-		
-		//reinit tinyMCE
 		var modalSelector = jQuery('#fsn_map_modal');
+		//reinit tinyMCE
 		if (jQuery('#fsncontent').length > 0) {
+			//make compatable with TinyMCE 4 which is used starting with WordPress 3.9
+			if(tinymce.majorVersion === "4") {
+				tinymce.execCommand('mceRemoveEditor', true, 'fsncontent');
+            } else {
+				tinymce.execCommand("mceRemoveControl", true, 'fsncontent');
+            }
 			var $element = jQuery('#fsncontent');
 	        var qt, textfield_id = $element.attr("id"),
 	            content = '';
