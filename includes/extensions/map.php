@@ -455,6 +455,9 @@ function fsn_get_google_map_custom_map($atts = false, $content = false) {
 	 */
 	
 	add_action('wp_footer', 'fsn_google_maps_api_script', 10);
+	
+	$id = uniqid();
+	
 	//plugin
 	wp_enqueue_script('fsn_map');
 	
@@ -462,18 +465,19 @@ function fsn_get_google_map_custom_map($atts = false, $content = false) {
 	$type_control = !empty($type_control) ? 'true' : 'false'; 
 	$scale_control = !empty($scale_control) ? 'true' : 'false'; 
 	
-	$id = uniqid();
 	
 	$output = '<div class="fsn-googlemap_container_'.$id.'" id="fsn_googlemap_'.$id.'" style="width:100%;height:' . $map_height . ';"></div>';
 			
 	ob_start();
 	?>
 	<script type="text/javascript">
-		function fsn_google_maps_loaded() {
-			var places = [];
-			<?php echo do_shortcode($content); ?>	
-			fsn_google_maps_init(<?php echo $lat_long; ?>,'fsn_googlemap_<?php echo $id; ?>',places,<?php echo $zoom_level; ?>,'<?php echo $map_type; ?>',<?php echo $zoom_control; ?>,<?php echo $zoom_pos; ?>,<?php echo $type_control; ?>,'<?php echo $typecontrol_style; ?>',<?php echo $type_pos; ?>,' <?php echo $map_styles; ?>',<?php echo $scale_control; ?>);
-		};
+		jQuery(window).load(function(){
+			if (typeof google === 'object' && typeof google.maps === 'object') {
+				var places = [];
+				<?php echo do_shortcode($content); ?>	
+				fsn_google_maps_init(<?php echo $lat_long; ?>,'fsn_googlemap_<?php echo $id; ?>',places,<?php echo $zoom_level; ?>,'<?php echo $map_type; ?>',<?php echo $zoom_control; ?>,<?php echo $zoom_pos; ?>,<?php echo $type_control; ?>,'<?php echo $typecontrol_style; ?>',<?php echo $type_pos; ?>,' <?php echo $map_styles; ?>',<?php echo $scale_control; ?>);
+			} 		
+		});
 	</script>
 	<?php
 	$output .= ob_get_clean();
@@ -505,19 +509,7 @@ function fsn_google_maps_api_script(){
 	$options = get_option( 'fsn_options' );
 	$fsn_google_maps_api_key = !empty($options['google_maps_api_key']) ? $options['google_maps_api_key'] : '';
 	?>
-	<script type="text/javascript">
-		jQuery(document).ready(function(){
-			if (typeof google === 'object' && typeof google.maps === 'object') {
-				fsn_google_maps_loaded();
-			} else {
-				var script = document.createElement('script');
-				script.type = 'text/javascript';
-				script.src = 'https://maps.googleapis.com/maps/api/js?<?php echo !empty($fsn_google_maps_api_key) ? 'key=' . $fsn_google_maps_api_key .'&' : ''; ?>v=3.exp' +
-				'&signed_in=false&callback=fsn_google_maps_loaded';
-				document.body.appendChild(script);
-			}
-		});
-	</script>
+	<script src='https://maps.googleapis.com/maps/api/js?<?php echo !empty($fsn_google_maps_api_key) ? 'key=' . $fsn_google_maps_api_key .'&' : ''; ?>signed_in=false' async></script>
 	<?php
 }
 ?>
