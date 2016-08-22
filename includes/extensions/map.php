@@ -458,16 +458,6 @@ function fsn_get_google_map_custom_map($atts = false, $content = false) {
 	
 	$id = uniqid();
 	
-	?>
-	<script type="text/javascript">
-		jQuery(document).ready(function(){
-			if (typeof google === 'object' && typeof google.maps === 'object') {
-				fsn_google_maps_loaded<?php echo $id; ?>();
-			} 		
-		});
-	</script>
-	<?php
-	
 	//plugin
 	wp_enqueue_script('fsn_map');
 	
@@ -481,11 +471,13 @@ function fsn_get_google_map_custom_map($atts = false, $content = false) {
 	ob_start();
 	?>
 	<script type="text/javascript">
-		function fsn_google_maps_loaded<?php echo $id; ?>() {
-			var places = [];
-			<?php echo do_shortcode($content); ?>	
-			fsn_google_maps_init(<?php echo $lat_long; ?>,'fsn_googlemap_<?php echo $id; ?>',places,<?php echo $zoom_level; ?>,'<?php echo $map_type; ?>',<?php echo $zoom_control; ?>,<?php echo $zoom_pos; ?>,<?php echo $type_control; ?>,'<?php echo $typecontrol_style; ?>',<?php echo $type_pos; ?>,' <?php echo $map_styles; ?>',<?php echo $scale_control; ?>);
-		};
+		jQuery(window).load(function(){
+			if (typeof google === 'object' && typeof google.maps === 'object') {
+				var places = [];
+				<?php echo do_shortcode($content); ?>	
+				fsn_google_maps_init(<?php echo $lat_long; ?>,'fsn_googlemap_<?php echo $id; ?>',places,<?php echo $zoom_level; ?>,'<?php echo $map_type; ?>',<?php echo $zoom_control; ?>,<?php echo $zoom_pos; ?>,<?php echo $type_control; ?>,'<?php echo $typecontrol_style; ?>',<?php echo $type_pos; ?>,' <?php echo $map_styles; ?>',<?php echo $scale_control; ?>);
+			} 		
+		});
 	</script>
 	<?php
 	$output .= ob_get_clean();
