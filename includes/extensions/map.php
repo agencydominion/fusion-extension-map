@@ -43,6 +43,13 @@ class FusionMap	{
 	 */
 	 
 	 public function load_map_layout() {
+		//verify nonce
+		check_ajax_referer( 'fsn-admin-edit-map', 'security' );
+		
+		//verify capabilities
+		if ( !current_user_can( 'edit_post', $_POST['post_id'] ) )
+			die( '-1' );
+			
 		global $fsn_map_layouts;
 		$map_layout = $_POST['map_layout'];
 		
