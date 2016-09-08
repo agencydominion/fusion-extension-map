@@ -41,14 +41,21 @@ function fsnUpdatemap(event) {
 
 //update map layout
 function fsnUpdateMapLayout() {
-	
+	var postID = jQuery('input#post_ID').val();
 	var mapLayout = jQuery('[name="map_layout"]').val();
 	
 	var data = {
 		action: 'map_load_layout',
-		map_layout: mapLayout
+		map_layout: mapLayout,
+		post_id: postID,
+		security: fsnExtMapJS.fsnEditMapNonce
 	};
 	jQuery.post(ajaxurl, data, function(response) {	
+		if (response == '-1') {
+			alert('Oops, something went wrong. Please reload the page and try again.');
+			return false;
+		}
+		
 		jQuery('#fsn_map_modal .tab-pane .form-group.map-layout').remove();
 		if (response !== null) {
 			jQuery('#fsn_map_modal .tab-pane').each(function() {
