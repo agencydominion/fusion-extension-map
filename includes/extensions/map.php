@@ -47,11 +47,11 @@ class FusionMap	{
 		check_ajax_referer( 'fsn-admin-edit-map', 'security' );
 		
 		//verify capabilities
-		if ( !current_user_can( 'edit_post', $_POST['post_id'] ) )
+		if ( !current_user_can( 'edit_post', intval($_POST['post_id']) ) )
 			die( '-1' );
 			
 		global $fsn_map_layouts;
-		$map_layout = $_POST['map_layout'];
+		$map_layout = sanitize_text_field($_POST['map_layout']);
 		
 		if (!empty($fsn_map_layouts) && !empty($map_layout)) {
 			$response_array = array();
