@@ -117,7 +117,7 @@ class FusionExtensionMap	{
 		$google_maps_api_key = !empty($options['google_maps_api_key']) ? $options['google_maps_api_key'] : '';
 		
 		// echo the fields
-		echo '<input id="fsn_google_maps_api_key" name="fsn_options[google_maps_api_key]" type="text" value="'. $google_maps_api_key.'"><br/>';
+		echo '<input id="fsn_google_maps_api_key" name="fsn_options[google_maps_api_key]" type="text" value="'. esc_attr($google_maps_api_key).'"><br/>';
 		echo '<p class="description">'. __('Input <a target="_blank" href="https://developers.google.com/maps/documentation/javascript/get-api-key">Google Maps</a> API key.', 'fusion-extension-map') .'</p>';
 	}
 	
