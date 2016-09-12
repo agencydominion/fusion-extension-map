@@ -202,7 +202,7 @@ class FusionMap	{
 		
 		if (!empty($map_layout)) {
 			$output .= '<div class="fsn-map '. esc_attr($map_layout) .' '. fsn_style_params_class($atts) .'">';
-				$callback_function = 'fsn_get_'. $map_layout .'_map';
+				$callback_function = 'fsn_get_'. sanitize_text_field($map_layout) .'_map';
 				$output .= call_user_func($callback_function, $atts, $content);
 			$output .= '</div>';
 		}
@@ -500,13 +500,13 @@ function fsn_get_google_map_marker_list_item($atts = false, $content = false) {
 	$id = uniqid();
 	
 	$marker_latlng = explode( ',', $atts['marker_co'] );
-	$popup_content = !empty($atts['aux_content']) ? '<p>'. esc_html($atts['aux_content']) .'</p>' : '';
+	$popup_content = !empty($atts['aux_content']) ? $atts['aux_content'] : '';
 	$popup_content = nl2br($popup_content);
 	$breaks = array("\r\n", "\n", "\r");
 	$popup_content_no_breaks = str_replace($breaks, "", $popup_content);
 	
 	
-	$output .= "var place_".esc_attr($id)."= { marker : { position:{ lat:".esc_attr($marker_latlng[0]).", lng:".esc_attr($marker_latlng[1])." }, icon:'".$attachment_attrs[0]."' }, infoWindow: { content:'".$popup_content_no_breaks."' } }; places.push(place_".esc_attr($id)."); ";				
+	$output .= "var place_".esc_attr($id)."= { marker : { position:{ lat:".esc_attr($marker_latlng[0]).", lng:".esc_attr($marker_latlng[1])." }, icon:'".esc_attr($attachment_attrs[0])."' }, infoWindow: { content:'".esc_html($popup_content_no_breaks)."' } }; places.push(place_".esc_attr($id)."); ";				
 			
 	return $output;
 }
