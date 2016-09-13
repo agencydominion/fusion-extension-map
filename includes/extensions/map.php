@@ -481,7 +481,7 @@ function fsn_get_google_map_custom_map($atts = false, $content = false) {
 			if (typeof google === 'object' && typeof google.maps === 'object') {
 				var places = [];
 				<?php echo do_shortcode($content); ?>	
-				fsn_google_maps_init(<?php echo esc_attr($lat_long); ?>,'fsn_googlemap_<?php echo esc_attr($id); ?>',places,<?php echo esc_attr($zoom_level); ?>,'<?php echo esc_attr($map_type); ?>',<?php echo esc_attr($zoom_control); ?>,<?php echo esc_attr($zoom_pos); ?>,<?php echo esc_attr($type_control); ?>,'<?php echo esc_attr($typecontrol_style); ?>',<?php echo esc_attr($type_pos); ?>,' <?php echo esc_attr($map_styles); ?>',<?php echo esc_attr($scale_control); ?>);
+				fsn_google_maps_init(<?php echo esc_attr($lat_long); ?>,'fsn_googlemap_<?php echo esc_attr($id); ?>',places,<?php echo esc_attr($zoom_level); ?>,'<?php echo esc_attr($map_type); ?>',<?php echo esc_attr($zoom_control); ?>,<?php echo esc_attr($zoom_pos); ?>,<?php echo esc_attr($type_control); ?>,'<?php echo esc_attr($typecontrol_style); ?>',<?php echo esc_attr($type_pos); ?>,'<?php echo esc_attr($map_styles); ?>',<?php echo esc_attr($scale_control); ?>);
 			} 		
 		});
 	</script>
@@ -506,7 +506,7 @@ function fsn_get_google_map_marker_list_item($atts = false, $content = false) {
 	$popup_content_no_breaks = str_replace($breaks, "", $popup_content);
 	
 	
-	$output .= "var place_".esc_attr($id)."= { marker : { position:{ lat:".esc_attr($marker_latlng[0]).", lng:".esc_attr($marker_latlng[1])." }, icon:'".esc_attr($attachment_attrs[0])."' }, infoWindow: { content:'".esc_html($popup_content_no_breaks)."' } }; places.push(place_".esc_attr($id)."); ";				
+	$output .= "var place_".esc_attr($id)."= { marker : { position:{ lat:".esc_attr($marker_latlng[0]).", lng:".esc_attr($marker_latlng[1])." }, icon:'".esc_attr($attachment_attrs[0])."' }, infoWindow: { content:'".esc_js($popup_content_no_breaks)."' } }; places.push(place_".esc_attr($id)."); ";				
 			
 	return $output;
 }
