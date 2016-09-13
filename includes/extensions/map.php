@@ -47,11 +47,11 @@ class FusionMap	{
 		check_ajax_referer( 'fsn-admin-edit-map', 'security' );
 		
 		//verify capabilities
-		if ( !current_user_can( 'edit_post', $_POST['post_id'] ) )
+		if ( !current_user_can( 'edit_post', intval($_POST['post_id']) ) )
 			die( '-1' );
 			
 		global $fsn_map_layouts;
-		$map_layout = $_POST['map_layout'];
+		$map_layout = sanitize_text_field($_POST['map_layout']);
 		
 		if (!empty($fsn_map_layouts) && !empty($map_layout)) {
 			$response_array = array();
@@ -64,17 +64,16 @@ class FusionMap	{
 					$depends_on_field = $param['dependency']['param_name'];
 					$depends_on_not_empty = !empty($param['dependency']['not_empty']) ? $param['dependency']['not_empty'] : false;
 					if (!empty($param['dependency']['value']) && is_array($param['dependency']['value'])) {
-						$depends_on_value = esc_attr(json_encode($param['dependency']['value']));
+						$depends_on_value = json_encode($param['dependency']['value']);
 					} else if (!empty($param['dependency']['value'])) {
 						$depends_on_value = $param['dependency']['value'];
 					} else {
 						$depends_on_value = '';
 					}
-					
 					$dependency_callback = !empty($param['dependency']['callback']) ? $param['dependency']['callback'] : '';
-					$dependency_string = ' data-dependency-param="'. $depends_on_field .'"'. ($depends_on_not_empty === true ? ' data-dependency-not-empty="true"' : '') . (!empty($depends_on_value) ? ' data-dependency-value="'. $depends_on_value .'"' : '') . (!empty($dependency_callback) ? ' data-dependency-callback="'. $dependency_callback .'"' : '');
+					$dependency_string = ' data-dependency-param="'. esc_attr($depends_on_field) .'"'. ($depends_on_not_empty === true ? ' data-dependency-not-empty="true"' : '') . (!empty($depends_on_value) ? ' data-dependency-value="'. esc_attr($depends_on_value) .'"' : '') . (!empty($dependency_callback) ? ' data-dependency-callback="'. esc_attr($dependency_callback) .'"' : '');
 				}
-				$param_output = '<div class="form-group map-layout'. ( !empty($param['class']) ? ' '. $param['class'] : '' ) .'"'. ( $dependency === true ? $dependency_string : '' ) .'>';
+				$param_output = '<div class="form-group map-layout'. ( !empty($param['class']) ? ' '. esc_attr($param['class']) : '' ) .'"'. ( $dependency === true ? $dependency_string : '' ) .'>';
 					$param_output .= FusionCore::get_input_field($param, $param_value);
 				$param_output .= '</div>';
 				$response_array[] = array(
@@ -202,8 +201,8 @@ class FusionMap	{
 		$output = '';
 		
 		if (!empty($map_layout)) {
-			$output .= '<div class="fsn-map '. $map_layout .' '. fsn_style_params_class($atts) .'">';
-				$callback_function = 'fsn_get_'. $map_layout .'_map';
+			$output .= '<div class="fsn-map '. esc_attr($map_layout) .' '. fsn_style_params_class($atts) .'">';
+				$callback_function = 'fsn_get_'. sanitize_text_field($map_layout) .'_map';
 				$output .= call_user_func($callback_function, $atts, $content);
 			$output .= '</div>';
 		}
@@ -432,7 +431,7 @@ function fsn_get_google_map_embed_map($atts = false, $content = false) {
 		'map_height' => '300px'
 	), $atts ) );
 		
-	$output = '<div class="fsn-googlemap_container" style="height:' . $map_height . ';">';
+	$output = '<div class="fsn-googlemap_container" style="height:' . esc_attr($map_height) . ';">';
 		$output .= !empty($content) ? base64_decode( wp_strip_all_tags($content) ) : '';
 	$output .= '</div>';
 	
@@ -473,7 +472,7 @@ function fsn_get_google_map_custom_map($atts = false, $content = false) {
 	$scale_control = !empty($scale_control) ? 'true' : 'false'; 
 	
 	
-	$output = '<div class="fsn-googlemap_container_'.$id.'" id="fsn_googlemap_'.$id.'" style="width:100%;height:' . $map_height . ';"></div>';
+	$output = '<div class="fsn-googlemap_container_'.esc_attr($id).'" id="fsn_googlemap_'.esc_attr($id).'" style="width:100%;height:' . esc_attr($map_height) . ';"></div>';
 			
 	ob_start();
 	?>
@@ -482,7 +481,7 @@ function fsn_get_google_map_custom_map($atts = false, $content = false) {
 			if (typeof google === 'object' && typeof google.maps === 'object') {
 				var places = [];
 				<?php echo do_shortcode($content); ?>	
-				fsn_google_maps_init(<?php echo $lat_long; ?>,'fsn_googlemap_<?php echo $id; ?>',places,<?php echo $zoom_level; ?>,'<?php echo $map_type; ?>',<?php echo $zoom_control; ?>,<?php echo $zoom_pos; ?>,<?php echo $type_control; ?>,'<?php echo $typecontrol_style; ?>',<?php echo $type_pos; ?>,' <?php echo $map_styles; ?>',<?php echo $scale_control; ?>);
+				fsn_google_maps_init(<?php echo esc_attr($lat_long); ?>,'fsn_googlemap_<?php echo esc_attr($id); ?>',places,<?php echo esc_attr($zoom_level); ?>,'<?php echo esc_attr($map_type); ?>',<?php echo esc_attr($zoom_control); ?>,<?php echo esc_attr($zoom_pos); ?>,<?php echo esc_attr($type_control); ?>,'<?php echo esc_attr($typecontrol_style); ?>',<?php echo esc_attr($type_pos); ?>,'<?php echo esc_attr($map_styles); ?>',<?php echo esc_attr($scale_control); ?>);
 			} 		
 		});
 	</script>
@@ -501,13 +500,13 @@ function fsn_get_google_map_marker_list_item($atts = false, $content = false) {
 	$id = uniqid();
 	
 	$marker_latlng = explode( ',', $atts['marker_co'] );
-	$popup_content = !empty($atts['aux_content']) ? '<p>'. $atts['aux_content'] .'</p>' : '';
+	$popup_content = !empty($atts['aux_content']) ? $atts['aux_content'] : '';
 	$popup_content = nl2br($popup_content);
 	$breaks = array("\r\n", "\n", "\r");
 	$popup_content_no_breaks = str_replace($breaks, "", $popup_content);
 	
 	
-	$output .= "var place_".$id."= { marker : { position:{ lat:".$marker_latlng[0].", lng:".$marker_latlng[1]." }, icon:'".$attachment_attrs[0]."' }, infoWindow: { content:'".$popup_content_no_breaks."' } }; places.push(place_".$id."); ";				
+	$output .= "var place_".esc_attr($id)."= { marker : { position:{ lat:".esc_attr($marker_latlng[0]).", lng:".esc_attr($marker_latlng[1])." }, icon:'".esc_attr($attachment_attrs[0])."' }, infoWindow: { content:'".esc_js($popup_content_no_breaks)."' } }; places.push(place_".esc_attr($id)."); ";				
 			
 	return $output;
 }
@@ -516,7 +515,7 @@ function fsn_google_maps_api_script(){
 	$options = get_option( 'fsn_options' );
 	$fsn_google_maps_api_key = !empty($options['google_maps_api_key']) ? $options['google_maps_api_key'] : '';
 	?>
-	<script src='https://maps.googleapis.com/maps/api/js?<?php echo !empty($fsn_google_maps_api_key) ? 'key=' . $fsn_google_maps_api_key .'&' : ''; ?>signed_in=false' async></script>
+	<script src='https://maps.googleapis.com/maps/api/js?<?php echo !empty($fsn_google_maps_api_key) ? 'key=' . esc_attr($fsn_google_maps_api_key) .'&' : ''; ?>signed_in=false' async></script>
 	<?php
 }
 ?>
