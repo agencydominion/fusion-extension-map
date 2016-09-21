@@ -121,6 +121,6 @@ function fsnUpdateMapLayout() {
 //For select2 fields inside map items
 jQuery(document).ready(function() {	
 	jQuery('body').on('fsnMapUpdated', function(e) {
-		initSelect2Fields();
+		fsnInitPostSelect();
 	});
 });
