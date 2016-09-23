@@ -72,7 +72,10 @@ class FusionExtensionMap	{
 	 public function front_enqueue_scripts_styles() {
 		//plugin
 		wp_register_script( 'fsn_map', plugin_dir_url( __FILE__ ) . 'includes/js/fusion-extension-map.js', array('jquery'), '1.0.0', true );
-		wp_enqueue_style( 'fsn_map', plugin_dir_url( __FILE__ ) . 'includes/css/fusion-extension-map.css', false, '1.0.0' );
+		global $post;
+		if (has_shortcode($post->post_content, 'fsn_map')) {
+			wp_enqueue_style( 'fsn_map', plugin_dir_url( __FILE__ ) . 'includes/css/fusion-extension-map.css', false, '1.0.0' );
+		}
 	}
 	
 	/**
