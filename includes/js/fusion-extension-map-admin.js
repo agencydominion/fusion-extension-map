@@ -118,13 +118,9 @@ function fsnUpdateMapLayout() {
 	});	
 }
 
-//For chosen fields inside map items
+//For select2 fields inside map items
 jQuery(document).ready(function() {	
 	jQuery('body').on('fsnMapUpdated', function(e) {
-		jQuery('.chosen select').chosen({
-			allow_single_deselect: true,
-			width: '100%',
-			placeholder_text_single : 'Choose an option.'
-		});
+		fsnInitPostSelect();
 	});
 });
