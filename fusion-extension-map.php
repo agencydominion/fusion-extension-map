@@ -4,9 +4,9 @@
  */
 /**
  * Plugin Name: Fusion : Extension - Map
- * Plugin URI: http://fusion.1867dev.com
+ * Plugin URI: http://www.agencydominion.com/fusion/
  * Description: Map Extension Package for Fusion.
- * Version: 1.1.1
+ * Version: 1.1.2
  * Author: Agency Dominion
  * Author URI: http://agencydominion.com
  * License: GPL2
@@ -69,13 +69,10 @@ class FusionExtensionMap	{
 	 *
 	 */
 	 
-	 public function front_enqueue_scripts_styles() {
+	public function front_enqueue_scripts_styles() {
 		//plugin
 		wp_register_script( 'fsn_map', plugin_dir_url( __FILE__ ) . 'includes/js/fusion-extension-map.js', array('jquery'), '1.0.0', true );
-		global $post;
-		if (has_shortcode($post->post_content, 'fsn_map')) {
-			wp_enqueue_style( 'fsn_map', plugin_dir_url( __FILE__ ) . 'includes/css/fusion-extension-map.css', false, '1.0.0' );
-		}
+		wp_enqueue_style( 'fsn_map', plugin_dir_url( __FILE__ ) . 'includes/css/fusion-extension-map.css', false, '1.0.0' );
 	}
 	
 	/**
