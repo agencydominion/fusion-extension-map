@@ -494,8 +494,10 @@ function fsn_get_google_map_custom_map($atts = false, $content = false) {
 function fsn_get_google_map_marker_list_item($atts = false, $content = false) {
 	$output = '';	
 	
-	$attachment = get_post($atts['image_id']);
-	$attachment_attrs = wp_get_attachment_image_src( $attachment->ID, 'thumbnail' );
+	if (!empty($atts['image_id'])) {
+		$attachment = get_post($atts['image_id']);
+		$attachment_attrs = wp_get_attachment_image_src( $attachment->ID, 'thumbnail' );
+	}
 	
 	$id = uniqid();
 	
@@ -506,7 +508,7 @@ function fsn_get_google_map_marker_list_item($atts = false, $content = false) {
 	$popup_content_no_breaks = str_replace($breaks, "", $popup_content);
 	
 	
-	$output .= "var place_".esc_attr($id)."= { marker : { position:{ lat:".esc_attr($marker_latlng[0]).", lng:".esc_attr($marker_latlng[1])." }, icon:'".esc_attr($attachment_attrs[0])."' }, infoWindow: { content:'".esc_js($popup_content_no_breaks)."' } }; places.push(place_".esc_attr($id)."); ";				
+	$output .= "var place_".esc_attr($id)."= { marker : { position:{ lat:".esc_attr($marker_latlng[0]).", lng:".esc_attr($marker_latlng[1])." }, icon:'".(!empty($attachment_attrs) ? esc_attr($attachment_attrs[0]) : '')."' }, infoWindow: { content:'".esc_js($popup_content_no_breaks)."' } }; places.push(place_".esc_attr($id)."); ";				
 			
 	return $output;
 }
