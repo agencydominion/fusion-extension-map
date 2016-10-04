@@ -52,6 +52,7 @@ class FusionMap	{
 			
 		global $fsn_map_layouts;
 		$map_layout = sanitize_text_field($_POST['map_layout']);
+		$response_array = array();
 		
 		if (!empty($fsn_map_layouts) && !empty($map_layout)) {
 			$response_array = array();
@@ -508,7 +509,7 @@ function fsn_get_google_map_marker_list_item($atts = false, $content = false) {
 	$popup_content_no_breaks = str_replace($breaks, "", $popup_content);
 	
 	
-	$output .= "var place_".esc_attr($id)."= { marker : { position:{ lat:".esc_attr($marker_latlng[0]).", lng:".esc_attr($marker_latlng[1])." }, icon:'".(!empty($attachment_attrs) ? esc_attr($attachment_attrs[0]) : '')."' }, infoWindow: { content:'".esc_js($popup_content_no_breaks)."' } }; places.push(place_".esc_attr($id)."); ";				
+	$output .= "var place_".esc_attr($id)."= { marker : { position:{ lat:".esc_attr($marker_latlng[0]).", lng:".esc_attr($marker_latlng[1])." }, icon:'".(!empty($attachment_attrs) ? esc_attr($attachment_attrs[0]) : '')."' }, infoWindow: { content:'".$popup_content_no_breaks."' } }; places.push(place_".esc_attr($id)."); ";				
 			
 	return $output;
 }
