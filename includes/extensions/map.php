@@ -103,12 +103,14 @@ class FusionMap	{
 		
 		if ($shortcode == 'fsn_map' && !empty($saved_values['map-layout']) && array_key_exists($saved_values['map-layout'], $fsn_map_layouts)) {
 			$saved_layout = $saved_values['map-layout'];
-			$params_to_add = $fsn_map_layouts[$saved_layout]['params'];
-			for ($i=0; $i < count($params_to_add); $i++) {
-				if (empty($params_to_add[$i]['class'])) {
-					$params_to_add[$i]['class'] = 'map-layout';
-				} else {
-					$params_to_add[$i]['class'] .= ' map-layout';
+			$params_to_add = !empty($fsn_map_layouts[$saved_layout]['params']) ? $fsn_map_layouts[$saved_layout]['params'] : '';
+			if (!empty($params_to_add)) {
+				for ($i=0; $i < count($params_to_add); $i++) {
+					if (empty($params_to_add[$i]['class'])) {
+						$params_to_add[$i]['class'] = 'map-layout';
+					} else {
+						$params_to_add[$i]['class'] .= ' map-layout';
+					}
 				}
 			}
 			//add layout params to initial load

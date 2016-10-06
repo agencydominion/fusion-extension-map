@@ -26,7 +26,7 @@ function fsnUpdatemap(event) {
 	var map = jQuery('#fsn_map_modal');
 	var currentLayout = map.attr('data-layout');
 	if (currentLayout != '' && currentLayout != selectedLayout) {
-		var r = confirm('Changing the map Layout will erase your current map. Do you wish to continue?');
+		var r = confirm(fsnExtMapL10n.layout_change);
 		if (r == true) {			
 			map.attr('data-layout', selectedLayout);
 			fsnUpdateMapLayout();
@@ -52,7 +52,7 @@ function fsnUpdateMapLayout() {
 	};
 	jQuery.post(ajaxurl, data, function(response) {	
 		if (response == '-1') {
-			alert('Oops, something went wrong. Please reload the page and try again.');
+			alert(fsnExtMapL10n.error);
 			return false;
 		}
 		

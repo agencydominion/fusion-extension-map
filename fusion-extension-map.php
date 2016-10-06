@@ -59,6 +59,12 @@ class FusionExtensionMap	{
 					'fsnEditMapNonce' => wp_create_nonce('fsn-admin-edit-map')
 				)
 			);
+			//add translation strings to script
+			$translation_array = array(
+				'error' => __('Oops, something went wrong. Please reload the page and try again.','fusion-extension-mape'),
+				'layout_change' => __('Changing the Map Layout will erase the current Map. Continue?','fusion-extension-map')
+			);
+			wp_localize_script('fsn_map_admin', 'fsnExtMapL10n', $translation_array);
 		}
 	}
 	
