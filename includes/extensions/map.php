@@ -52,6 +52,7 @@ class FusionMap	{
 			
 		global $fsn_map_layouts;
 		$map_layout = sanitize_text_field($_POST['map_layout']);
+		$response_array = array();
 		
 		if (!empty($fsn_map_layouts) && !empty($map_layout)) {
 			$response_array = array();
@@ -102,12 +103,14 @@ class FusionMap	{
 		
 		if ($shortcode == 'fsn_map' && !empty($saved_values['map-layout']) && array_key_exists($saved_values['map-layout'], $fsn_map_layouts)) {
 			$saved_layout = $saved_values['map-layout'];
-			$params_to_add = $fsn_map_layouts[$saved_layout]['params'];
-			for ($i=0; $i < count($params_to_add); $i++) {
-				if (empty($params_to_add[$i]['class'])) {
-					$params_to_add[$i]['class'] = 'map-layout';
-				} else {
-					$params_to_add[$i]['class'] .= ' map-layout';
+			$params_to_add = !empty($fsn_map_layouts[$saved_layout]['params']) ? $fsn_map_layouts[$saved_layout]['params'] : '';
+			if (!empty($params_to_add)) {
+				for ($i=0; $i < count($params_to_add); $i++) {
+					if (empty($params_to_add[$i]['class'])) {
+						$params_to_add[$i]['class'] = 'map-layout';
+					} else {
+						$params_to_add[$i]['class'] .= ' map-layout';
+					}
 				}
 			}
 			//add layout params to initial load
@@ -494,8 +497,10 @@ function fsn_get_google_map_custom_map($atts = false, $content = false) {
 function fsn_get_google_map_marker_list_item($atts = false, $content = false) {
 	$output = '';	
 	
-	$attachment = get_post($atts['image_id']);
-	$attachment_attrs = wp_get_attachment_image_src( $attachment->ID, 'thumbnail' );
+	if (!empty($atts['image_id'])) {
+		$attachment = get_post($atts['image_id']);
+		$attachment_attrs = wp_get_attachment_image_src( $attachment->ID, 'thumbnail' );
+	}
 	
 	$id = uniqid();
 	
@@ -506,7 +511,7 @@ function fsn_get_google_map_marker_list_item($atts = false, $content = false) {
 	$popup_content_no_breaks = str_replace($breaks, "", $popup_content);
 	
 	
-	$output .= "var place_".esc_attr($id)."= { marker : { position:{ lat:".esc_attr($marker_latlng[0]).", lng:".esc_attr($marker_latlng[1])." }, icon:'".esc_attr($attachment_attrs[0])."' }, infoWindow: { content:'".esc_js($popup_content_no_breaks)."' } }; places.push(place_".esc_attr($id)."); ";				
+	$output .= "var place_".esc_attr($id)."= { marker : { position:{ lat:".esc_attr($marker_latlng[0]).", lng:".esc_attr($marker_latlng[1])." }, icon:'".(!empty($attachment_attrs) ? esc_attr($attachment_attrs[0]) : '')."' }, infoWindow: { content:'".esc_attr($popup_content_no_breaks)."' } }; places.push(place_".esc_attr($id)."); ";				
 			
 	return $output;
 }
