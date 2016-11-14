@@ -256,12 +256,6 @@ class FusionMap	{
 		//Zoom Level options
 		$zoom_arr = array(
 			'14' => __('14', 'fusion-extension-map'), 
-			'1' => __('1', 'fusion-extension-map'), 
-			'2' => __('2', 'fusion-extension-map'), 
-			'3' => __('3', 'fusion-extension-map'), 
-			'4' => __('4', 'fusion-extension-map'), 
-			'5' => __('5', 'fusion-extension-map'), 
-			'6' => __('6', 'fusion-extension-map'),
 			'7' => __('7', 'fusion-extension-map'), 
 			'8'=> __('8', 'fusion-extension-map'),
 			'9' => __('9', 'fusion-extension-map'), 
