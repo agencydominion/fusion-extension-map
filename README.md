@@ -16,6 +16,6 @@ Allows you to build a custom Google Map with a wide range of options for customi
 
 *This option uses the Google Maps JavaScript API and requires an [API Key](https://developers.google.com/maps/documentation/javascript/get-api-key).*
 
-[Learn more about the Map Extension in the Fusion User Guide](https://agencydominion.zendesk.com/hc/en-us/articles/220434327-Map)
+[Learn more about the Map Extension in the Fusion User Guide](http://agencydominion.helpscoutdocs.com/article/43-map)
 
 **Requires the core [Fusion](https://wordpress.org/plugins/fusion/) plugin.**
