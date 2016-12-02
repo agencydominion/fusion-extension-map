@@ -236,7 +236,7 @@ class FusionMap	{
 					'param_name' => 'map_height',
 					'label' => __('Map Height', 'fusion-extension-map'),
 					'help' => __( 'Default is 300px.', 'fusion-extension-map'),
-					'section' => 'advanced'
+					'section' => 'style'
 				)
 			)
 		);
@@ -318,11 +318,30 @@ class FusionMap	{
 					'help' => __( 'Input the latitude and longitude coordinates the map should center on.', 'fusion-extension-map')
 				),
 				array(
-					'type' => 'text',
-					'param_name' => 'map_height',
-					'label' => __('Map Height', 'fusion-extension-map'),
-					'help' => __( 'Default is 300px.', 'fusion-extension-map'),
-					'section' => 'advanced'
+					'type' => 'custom_list',
+					'param_name' => 'custom_list_items',
+					'id' => 'google_map_marker', //each custom list requires a unique ID
+					'item_params' => array(
+						array(
+							'type' => 'image',
+							'param_name' => 'image_id',
+							'label' => __('Marker Image', 'fusion-extension-map')
+						),
+						array(
+							'type' => 'text',
+							'param_name' => 'marker_co',
+							'label' => __('Map Marker Coordinates', 'fusion-extension-map'),
+							'help' => __( 'To find the coordinates, right-click on your desired location within Google Maps and click "What\'s here?". The box at the bottom will contain the coordinates.', 'fusion-extension-map')
+						),
+						array(
+							'type' => 'textarea',
+							'param_name' => 'aux_content',
+							'label' => __('Popup Content', 'fusion-extension-map'),
+							'help' => __('Input map marker tooltip text.', 'fusion-extension-map')
+						)
+					),
+					'label' => __('Map Markers', 'fusion-extension-map'),
+					'help' => __('Drag-and-drop blocks to re-order.', 'fusion-extension-map'),
 				),
 				array(
 					'type' => 'select',
@@ -390,37 +409,18 @@ class FusionMap	{
 					'section' => 'advanced'
 				),
 				array(
-					'type' => 'custom_list',
-					'param_name' => 'custom_list_items',
-					'id' => 'google_map_marker', //each custom list requires a unique ID
-					'item_params' => array(
-						array(
-							'type' => 'image',
-							'param_name' => 'image_id',
-							'label' => __('Marker Image', 'fusion-extension-map')
-						),
-						array(
-							'type' => 'text',
-							'param_name' => 'marker_co',
-							'label' => __('Map Marker Coordinates', 'fusion-extension-map'),
-							'help' => __( 'To find the coordinates, right-click on your desired location within Google Maps and click "What\'s here?". The box at the bottom will contain the coordinates.', 'fusion-extension-map')
-						),
-						array(
-							'type' => 'textarea',
-							'param_name' => 'aux_content',
-							'label' => __('Popup Content', 'fusion-extension-map'),
-							'help' => __('Input map marker tooltip text.', 'fusion-extension-map')
-						)
-					),
-					'label' => __('Map Markers', 'fusion-extension-map'),
-					'help' => __('Drag-and-drop blocks to re-order.', 'fusion-extension-map'),
+					'type' => 'text',
+					'param_name' => 'map_height',
+					'label' => __('Map Height', 'fusion-extension-map'),
+					'help' => __( 'Default is 300px.', 'fusion-extension-map'),
+					'section' => 'style'
 				),
 				array(
 					'type' => 'textarea',
 					'param_name' => 'map_styles',
 					'label' => __('Map Styles', 'fusion-extension-map'),
 					'help' => __('Input a custom styles array (e.g. from Snazzy Maps) to change the map appearance.', 'fusion-extension-map'),
-					'section' => 'advanced'
+					'section' => 'style'
 				)
 			)
 		);
