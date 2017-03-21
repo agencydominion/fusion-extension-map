@@ -27,7 +27,7 @@ function fsn_google_maps_init(lat,lng,mapID,places,zoomLevel,mapType,zoomControl
 	
 	mapStyles = JSON.parse(mapStyles);
 	
-	var isDraggable = Modernizr.touch ? false : true;
+	var isDraggable = Modernizr.touchevents ? false : true;
 	
 	var options = {
 	    center: latlng,
