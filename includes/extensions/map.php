@@ -486,7 +486,7 @@ function fsn_get_google_map_custom_map($atts = false, $content = false) {
 	ob_start();
 	?>
 	<script type="text/javascript">
-		jQuery(window).load(function(){
+		jQuery(window).on('load', function(){
 			if (typeof google === 'object' && typeof google.maps === 'object') {
 				var places = [];
 				<?php echo do_shortcode($content); ?>	
