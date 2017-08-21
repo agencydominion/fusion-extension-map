@@ -9,6 +9,8 @@
  * Version: 1.1.8
  * Author: Agency Dominion
  * Author URI: http://agencydominion.com
+ * Text Domain: fusion-extension-map
+ * Domain Path: /languages/
  * License: GPL2
  */
  
@@ -25,7 +27,7 @@ class FusionExtensionMap	{
 	public function __construct() {
 						
 		// Initialize the language files
-		load_plugin_textdomain( 'fusion-extension-map', false, plugin_dir_url( __FILE__ ) . 'languages' );
+		add_action('plugins_loaded', array($this, 'load_textdomain'));
 		
 		// Enqueue admin scripts and styles
 		add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts_styles'));
@@ -36,6 +38,17 @@ class FusionExtensionMap	{
 		// Add Settings
 		add_action('admin_init', array($this, 'register_fusion_map_settings'), 11);
 		
+	}
+	
+	/**
+	 * Load Textdomain
+	 *
+	 * @since 1.1.9
+	 *
+	 */
+	 
+	public function load_textdomain() {
+		load_plugin_textdomain( 'fusion-extension-map', FALSE, basename( dirname( __FILE__ ) ) . '/languages/' );
 	}
 	
 	/**
