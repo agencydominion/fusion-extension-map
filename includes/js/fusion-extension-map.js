@@ -41,6 +41,7 @@ function fsn_google_maps_init(lat,lng,mapID,places,zoomLevel,mapType,zoomControl
 	        style: typeControlStyle,
 	        position: typeControlPosition
 	    },
+	    fullscreenControl: false,
 	    scaleControl: scaleControl,
 	    streetViewControl: false,
 	    zoom: zoomLevel,
