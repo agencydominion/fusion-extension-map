@@ -150,7 +150,7 @@ class FusionMap	{
 				$map_layout_options = array();
 				$smart_supported = array();
 				$layout_specific_params = array();
-				$map_layout_options[''] = 'Choose map layout.';
+				$map_layout_options[''] = __('Choose map type.', 'fusion-extension-map');
 				foreach($map_layouts as $key => $value) {
 					//create array of layouts for select layout dropdown
 					$map_layout_options[$key] = $value['name'];
