@@ -10,53 +10,53 @@
  *
  * @since 1.0.0
  */
- 
+
 //Google Map
 
 class FusionMap	{
 
 	public function __construct() {
-		
+
 		//add map shortcode
 		add_shortcode('fsn_map', array($this, 'map_shortcode'));
-		
+
 		//load map layout via AJAX
 		add_action('wp_ajax_map_load_layout', array($this, 'load_map_layout'));
-		
+
 		//load saved map layout fields
 		add_filter('fsn_element_params', array($this, 'load_saved_map_layout_fields'), 10, 3);
-		
+
 		//initialize map
 		add_action('init', array($this, 'fsn_init_map'), 12);
-				
+
 		//add basic map layout
 		add_filter('add_map_layout', array($this, 'google_map_embed'));
-		
+
 		//add advanced map layout
 		add_filter('add_map_layout', array($this, 'google_map_custom'));
-		
+
 	}
 	/**
 	 * Load Map Layout
 	 *
 	 * @since 1.0.0
 	 */
-	 
+
 	 public function load_map_layout() {
 		//verify nonce
 		check_ajax_referer( 'fsn-admin-edit-map', 'security' );
-		
+
 		//verify capabilities
 		if ( !current_user_can( 'edit_post', intval($_POST['post_id']) ) )
 			die( '-1' );
-			
+
 		global $fsn_map_layouts;
 		$map_layout = sanitize_text_field($_POST['map_layout']);
 		$response_array = array();
-		
+
 		if (!empty($fsn_map_layouts) && !empty($map_layout)) {
 			$response_array = array();
-			foreach($fsn_map_layouts[$map_layout]['params'] as $param) {						
+			foreach($fsn_map_layouts[$map_layout]['params'] as $param) {
 				$param_value = '';
 				$param['section'] = !empty($param['section']) ? $param['section'] : 'general';
 				//check for dependency
@@ -82,25 +82,25 @@ class FusionMap	{
 					'output' => $param_output
 				);
 			}
-		}	
-		
+		}
+
 		header('Content-type: application/json');
-		
+
 		echo json_encode($response_array);
-		
+
 		exit;
 	}
-	
+
 	/**
 	 * Load Saved Map Layout Fields
 	 *
 	 * @since 1.0.0
 	 */
-	 
+
 	public function load_saved_map_layout_fields($params, $shortcode, $saved_values) {
-	
+
 		global $fsn_map_layouts;
-		
+
 		if ($shortcode == 'fsn_map' && !empty($saved_values['map-layout']) && array_key_exists($saved_values['map-layout'], $fsn_map_layouts)) {
 			$saved_layout = $saved_values['map-layout'];
 			$params_to_add = !empty($fsn_map_layouts[$saved_layout]['params']) ? $fsn_map_layouts[$saved_layout]['params'] : '';
@@ -116,35 +116,35 @@ class FusionMap	{
 			//add layout params to initial load
 			array_splice($params, 1, 0, $params_to_add);
 		}
-		
+
 		return $params;
 	}
-	
+
 	/**
 	 * Initialize map
 	 *
 	 * @since 1.0.0
 	 */
-	
-	
+
+
 	public function fsn_init_map() {
-	
+
 		//MAP SHORTCODE
-		if (function_exists('fsn_map')) {							
-			
+		if (function_exists('fsn_map')) {
+
 			//define map layouts
 			$map_layouts = array();
-			
+
 			//get layouts
 			$map_layouts = apply_filters('add_map_layout', $map_layouts);
-			
+
 			//create map layouts global
 			global $fsn_map_layouts;
 			$fsn_map_layouts = $map_layouts;
-			
+
 			//pass layouts array to script
 			wp_localize_script('fsn_google_map', 'fsnMap', $map_layouts);
-			
+
 			//get map layout options
 			if (!empty($map_layouts)) {
 				$map_layout_options = array();
@@ -159,23 +159,23 @@ class FusionMap	{
 				foreach($map_layouts as $map_layout) {
 					foreach($map_layout['params'] as $map_layout_param) {
 						if ($map_layout_param['type'] == 'custom_list') {
-							global $fsn_custom_lists;	
+							global $fsn_custom_lists;
 							$fsn_custom_lists[$map_layout_param['id']]['parent'] = 'fsn_map';
 							$fsn_custom_lists[$map_layout_param['id']]['params'] = $map_layout_param['item_params'];
 						}
 					}
 				}
 			}
-									
-			$params_array = array(		
+
+			$params_array = array(
 				array(
 					'type' => 'select',
 					'options' => $map_layout_options,
 					'param_name' => 'map_layout',
 					'label' => __('Type', 'fusion-extension-map'),
-				)			
+				)
 			);
-			
+
 			fsn_map(array(
 				'name' => __('Map', 'fusion-extension-map'),
 				'description' => __('Add a Map. Choose the map type to see additional configuration options.', 'fusion-extension-map'),
@@ -186,7 +186,7 @@ class FusionMap	{
 			));
 		}
 	}
-	
+
 	/**
 	 * Map shortcode
 	 *
@@ -195,30 +195,30 @@ class FusionMap	{
 	 * @param array $atts The shortcode attributes.
 	 * @param string $content The shortcode content.
 	 */
-	
-	public function map_shortcode( $atts, $content ) {		
-		extract( shortcode_atts( array(			
+
+	public function map_shortcode( $atts, $content ) {
+		extract( shortcode_atts( array(
 			'map_layout' => false
 		), $atts ) );
-		
+
 		$output = '';
-		
+
 		if (!empty($map_layout)) {
 			$output .= '<div class="fsn-map '. esc_attr($map_layout) .' '. fsn_style_params_class($atts) .'">';
 				$callback_function = 'fsn_get_'. sanitize_text_field($map_layout) .'_map';
 				$output .= call_user_func($callback_function, $atts, $content);
 			$output .= '</div>';
 		}
-		
+
 		return $output;
 	}
-	
+
 	/**
 	 * Google Map Embed layout
 	 */
-	 
+
 	public function google_map_embed($map_layouts) {
-		
+
 		//basic map layout
 		$google_map_embed = array(
 			'name' => __('Google Map Embed', 'fusion-extension-map'),
@@ -241,42 +241,42 @@ class FusionMap	{
 			)
 		);
 		$map_layouts['google_map_embed'] = $google_map_embed;
-		
+
 		return $map_layouts;
 	}
-	
+
 	/**
 	 * Google Map Custom layout
 	 */
 
 	 public function google_map_custom($map_layouts)	{
-	
+
 		//advanced map layout
-		
+
 		//Zoom Level options
 		$zoom_arr = array(
 			'14' => __('14', 'fusion-extension-map'),
-			'1' => __('1', 'fusion-extension-map'), 
-			'2' => __('2', 'fusion-extension-map'), 
-			'3' => __('3', 'fusion-extension-map'), 
-			'4' => __('4', 'fusion-extension-map'), 
-			'5' => __('5', 'fusion-extension-map'), 
+			'1' => __('1', 'fusion-extension-map'),
+			'2' => __('2', 'fusion-extension-map'),
+			'3' => __('3', 'fusion-extension-map'),
+			'4' => __('4', 'fusion-extension-map'),
+			'5' => __('5', 'fusion-extension-map'),
 			'6' => __('6', 'fusion-extension-map'),
-			'7' => __('7', 'fusion-extension-map'), 
+			'7' => __('7', 'fusion-extension-map'),
 			'8'=> __('8', 'fusion-extension-map'),
-			'9' => __('9', 'fusion-extension-map'), 
+			'9' => __('9', 'fusion-extension-map'),
 			'10' => __('10', 'fusion-extension-map'),
-			'11' => __('11', 'fusion-extension-map'), 
+			'11' => __('11', 'fusion-extension-map'),
 			'12' => __('12', 'fusion-extension-map'),
 			'13' => __('13', 'fusion-extension-map'),
 			'15' => __('15', 'fusion-extension-map'),
 			'16' => __('16', 'fusion-extension-map'),
-			'17' => __('17', 'fusion-extension-map'), 
+			'17' => __('17', 'fusion-extension-map'),
 			'18' => __('18', 'fusion-extension-map'),
 			'19' => __('19', 'fusion-extension-map'),
-			'20' => __('20', 'fusion-extension-map')        
+			'20' => __('20', 'fusion-extension-map')
 		);
-		
+
 		//Map Control Position
 		$controlpos_arr = array(
 			'google.maps.ControlPosition.TOP_LEFT' => __('Top Left', 'fusion-extension-map'),
@@ -292,7 +292,7 @@ class FusionMap	{
 			'google.maps.ControlPosition.BOTTOM_LEFT' => __('Bottom Left', 'fusion-extension-map'),
 			'google.maps.ControlPosition.BOTTOM_RIGHT' => __('Bottom Right', 'fusion-extension-map')
 		);
-		
+
 		//Map Type options
 		$type_arr = array(
 			'ROADMAP' => __('Road Map', 'fusion-extension-map'),
@@ -300,14 +300,14 @@ class FusionMap	{
 			'HYBRID' => __('Hybrid', 'fusion-extension-map'),
 			'TERRAIN' => __('Terrain', 'fusion-extension-map')
 		);
-		
+
 		//Map Type Control options
 		$mapTypeControl_arr = array(
 			'DEFAULT' => __('Default', 'fusion-extension-map'),
 			'HORIZONTAL_BAR' => __('Horizontal Bar', 'fusion-extension-map'),
 			'DROPDOWN_MENU' => __('Dropdown Menu', 'fusion-extension-map')
 		);
-	
+
 		$google_map_custom = array(
 			'name' => __('Google Map Custom', 'fusion-extension-map'),
 			'params' => array(
@@ -425,11 +425,11 @@ class FusionMap	{
 			)
 		);
 		$map_layouts['google_map_custom'] = $google_map_custom;
-		
-		return $map_layouts;	
+
+		return $map_layouts;
 	}
 }
- 
+
 $fsn_map = new FusionMap();
 
 //Basic Map
@@ -439,15 +439,15 @@ function fsn_get_google_map_embed_map($atts = false, $content = false) {
 	extract( shortcode_atts( array(
 		'map_height' => '300px'
 	), $atts ) );
-		
+
 	$output = '<div class="fsn-googlemap_container" style="height:' . esc_attr($map_height) . ';">';
 		$output .= !empty($content) ? base64_decode( wp_strip_all_tags($content) ) : '';
 	$output .= '</div>';
-	
+
 	return $output;
 }
 
-//Advanced Map 
+//Advanced Map
 
 //render map layout ** function name must follow fsn_get_[map layout key]_map
 function fsn_get_google_map_custom_map($atts = false, $content = false) {
@@ -464,67 +464,66 @@ function fsn_get_google_map_custom_map($atts = false, $content = false) {
 		'scale_control' => '',
 		'map_styles' => '[]'
 	), $atts));
-	   
+
 	/**
 	 * Enqueue Scripts
 	 */
-	
+
 	add_action('wp_footer', 'fsn_google_maps_api_script', 10);
-	
+
 	$id = uniqid();
-	
+
 	//plugin
 	wp_enqueue_script('fsn_map');
-	
-	$zoom_control = !empty($zoom_control) ? 'true' : 'false'; 
-	$type_control = !empty($type_control) ? 'true' : 'false'; 
-	$scale_control = !empty($scale_control) ? 'true' : 'false'; 
-	
-	
+
+	$zoom_control = !empty($zoom_control) ? 'true' : 'false';
+	$type_control = !empty($type_control) ? 'true' : 'false';
+	$scale_control = !empty($scale_control) ? 'true' : 'false';
+
+
 	$output = '<div class="fsn-googlemap_container_'.esc_attr($id).'" id="fsn_googlemap_'.esc_attr($id).'" style="width:100%;height:' . esc_attr($map_height) . ';"></div>';
-			
+
 	ob_start();
 	?>
 	<script type="text/javascript">
 		jQuery(window).on('load', function(){
 			if (typeof google === 'object' && typeof google.maps === 'object') {
 				var places = [];
-				<?php echo do_shortcode($content); ?>	
+				<?php echo do_shortcode($content); ?>
 				fsn_google_maps_init(<?php echo esc_attr($lat_long); ?>,'fsn_googlemap_<?php echo esc_attr($id); ?>',places,<?php echo esc_attr($zoom_level); ?>,'<?php echo esc_attr($map_type); ?>',<?php echo esc_attr($zoom_control); ?>,<?php echo esc_attr($zoom_pos); ?>,<?php echo esc_attr($type_control); ?>,'<?php echo esc_attr($typecontrol_style); ?>',<?php echo esc_attr($type_pos); ?>,'<?php echo esc_attr($map_styles); ?>',<?php echo esc_attr($scale_control); ?>);
-			} 		
+			}
 		});
 	</script>
 	<?php
 	$output .= ob_get_clean();
-	
-	return $output;	   
+
+	return $output;
 }
 //render list item ** function name must follow fsn_get_[list_id]_list_item
 function fsn_get_google_map_marker_list_item($atts = false, $content = false) {
-	$output = '';	
-	
+	$output = '';
+
 	if (!empty($atts['image_id'])) {
 		$attachment = get_post($atts['image_id']);
 		$attachment_attrs = wp_get_attachment_image_src( $attachment->ID, 'thumbnail' );
 	}
-	
+
 	$id = uniqid();
-	
+
 	$marker_latlng = explode( ',', $atts['marker_co'] );
 	$popup_content = !empty($atts['aux_content']) ? $atts['aux_content'] : '';
 	$popup_content = nl2br($popup_content);
 	$breaks = array("\r\n", "\n", "\r");
 	$popup_content_no_breaks = str_replace($breaks, "", $popup_content);
-	
-	
-	$output .= "var place_".esc_attr($id)."= { marker : { position:{ lat:".esc_attr($marker_latlng[0]).", lng:".esc_attr($marker_latlng[1])." }, icon:'".(!empty($attachment_attrs) ? esc_attr($attachment_attrs[0]) : '')."' }, infoWindow: { content:'".esc_attr($popup_content_no_breaks)."' } }; places.push(place_".esc_attr($id)."); ";				
-			
+
+
+	$output .= "var place_".esc_attr($id)."= { marker : { position:{ lat:".esc_attr($marker_latlng[0]).", lng:".esc_attr($marker_latlng[1])." }, icon:'".(!empty($attachment_attrs) ? esc_attr($attachment_attrs[0]) : '')."' }, infoWindow: { content:'".esc_attr($popup_content_no_breaks)."' } }; places.push(place_".esc_attr($id)."); ";
+
 	return $output;
 }
 
 function fsn_google_maps_api_script(){
-	$options = get_option( 'fsn_options' );
-	$fsn_google_maps_api_key = !empty($options['google_maps_api_key']) ? $options['google_maps_api_key'] : '';
+	$fsn_google_maps_api_key = FusionExtensionMap::fsn_get_google_maps_api_key();
 	?>
 	<script src='https://maps.googleapis.com/maps/api/js<?php echo !empty($fsn_google_maps_api_key) ? '?key=' . esc_attr($fsn_google_maps_api_key) : ''; ?>' async></script>
 	<?php
