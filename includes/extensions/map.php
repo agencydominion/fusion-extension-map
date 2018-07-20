@@ -523,8 +523,7 @@ function fsn_get_google_map_marker_list_item($atts = false, $content = false) {
 }
 
 function fsn_google_maps_api_script(){
-	$options = get_option( 'fsn_options' );
-	$fsn_google_maps_api_key = !empty($options['google_maps_api_key']) ? $options['google_maps_api_key'] : '';
+	$fsn_google_maps_api_key = FusionExtensionMap::fsn_get_google_maps_api_key();
 	?>
 	<script src='https://maps.googleapis.com/maps/api/js<?php echo !empty($fsn_google_maps_api_key) ? '?key=' . esc_attr($fsn_google_maps_api_key) : ''; ?>' async></script>
 	<?php

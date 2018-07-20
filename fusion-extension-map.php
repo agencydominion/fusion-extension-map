@@ -6,7 +6,7 @@
  * Plugin Name: Fusion : Extension - Map
  * Plugin URI: http://www.agencydominion.com/fusion/
  * Description: Map Extension Package for Fusion.
- * Version: 1.2.1
+ * Version: 1.3.0
  * Author: Agency Dominion
  * Author URI: http://agencydominion.com
  * Text Domain: fusion-extension-map
@@ -130,15 +130,41 @@ class FusionExtensionMap	{
 	 *
 	 */
 
-	public function fsn_google_maps_api_key() {
-		// get option value from the database
-		$options = get_option( 'fsn_options' );
-		$google_maps_api_key = !empty($options['google_maps_api_key']) ? $options['google_maps_api_key'] : '';
+  public function fsn_google_maps_api_key() {
+    // get key api
+    $google_maps_api_key = $this->fsn_get_google_maps_api_key();
+    // echo the fields
+    echo '<input id="fsn_google_maps_api_key" name="fsn_options[google_maps_api_key]" type="text" value="'. esc_attr($google_maps_api_key).'"'. (!empty($this->fsn_get_google_maps_api_key_constant()) ? ' disabled' : '') . '><br/>';
+    echo '<p class="description">'. __('Input <a target="_blank" href="https://developers.google.com/maps/documentation/javascript/get-api-key">Google Maps</a> API key.', 'fusion-extension-map') .'</p>';
+  }
 
-		// echo the fields
-		echo '<input id="fsn_google_maps_api_key" name="fsn_options[google_maps_api_key]" type="text" value="'. esc_attr($google_maps_api_key).'"><br/>';
-		echo '<p class="description">'. __('Input <a target="_blank" href="https://developers.google.com/maps/documentation/javascript/get-api-key">Google Maps</a> API key.', 'fusion-extension-map') .'</p>';
-	}
+
+  /**
+   * Get Google Maps API Key Constant
+   *
+   * @since 1.3.0
+   *
+   */
+
+  public static function fsn_get_google_maps_api_key_constant() {
+    return defined( 'FSN_GOOGLE_MAPS_API_KEY' );
+  }
+
+  /**
+   * Get Google Maps API Key
+   *
+   * @since 1.3.0
+   *
+   */
+
+  public static function fsn_get_google_maps_api_key() {
+    $google_maps_api_key = FusionExtensionMap::fsn_get_google_maps_api_key_constant() ? FSN_GOOGLE_MAPS_API_KEY : '';
+    if(empty($google_maps_api_key)) {
+      $options = get_option( 'fsn_options' );
+		  $google_maps_api_key = !empty($options['google_maps_api_key']) ? $options['google_maps_api_key'] : '';
+    }
+    return $google_maps_api_key;
+  }
 
 }
 
