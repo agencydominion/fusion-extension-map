@@ -133,8 +133,9 @@ class FusionExtensionMap	{
   public function fsn_google_maps_api_key() {
     // get key api
     $google_maps_api_key = $this->fsn_get_google_maps_api_key();
+		$google_maps_api_key_constant = $this->fsn_get_google_maps_api_key_constant();
     // echo the fields
-    echo '<input id="fsn_google_maps_api_key" name="fsn_options[google_maps_api_key]" type="text" value="'. esc_attr($google_maps_api_key).'"'. (!empty($this->fsn_get_google_maps_api_key_constant()) ? ' disabled' : '') . '><br/>';
+    echo '<input id="fsn_google_maps_api_key" name="fsn_options[google_maps_api_key]" type="text" value="'. esc_attr($google_maps_api_key).'"'. (!empty($google_maps_api_key_constant) ? ' disabled' : '') . '><br/>';
     echo '<p class="description">'. __('Input <a target="_blank" href="https://developers.google.com/maps/documentation/javascript/get-api-key">Google Maps</a> API key.', 'fusion-extension-map') .'</p>';
   }
 
