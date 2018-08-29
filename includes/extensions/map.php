@@ -328,6 +328,16 @@ class FusionMap	{
 							'label' => __('Marker Image', 'fusion-extension-map')
 						),
 						array(
+							'type' => 'select',
+							'options' => array(
+								'bottom_center' => __('Bottom Center', 'fusion-extension-content-roll-map'),
+								'center' => __('Center', 'fusion-extension-content-roll-map')
+							),
+							'param_name' => 'marker_anchor_point_position',
+							'label' => __('Anchor Point Position', 'fusion-extension-content-roll-map'),
+							'help' => __('Choose anchor point position from the custom marker image.', 'fusion-extension-map'),
+						),
+						array(
 							'type' => 'text',
 							'param_name' => 'marker_co',
 							'label' => __('Map Marker Coordinates', 'fusion-extension-map'),
@@ -338,6 +348,11 @@ class FusionMap	{
 							'param_name' => 'aux_content',
 							'label' => __('Popup Content', 'fusion-extension-map'),
 							'help' => __('Input map marker tooltip text.', 'fusion-extension-map')
+						),
+						array(
+							'type' => 'checkbox',
+							'param_name' => 'infobox_open',
+							'label' => __('Show Popup on Load.', 'fusion-extension-map')
 						)
 					),
 					'label' => __('Map Markers', 'fusion-extension-map'),
@@ -503,21 +518,23 @@ function fsn_get_google_map_custom_map($atts = false, $content = false) {
 function fsn_get_google_map_marker_list_item($atts = false, $content = false) {
 	$output = '';
 
-	if (!empty($atts['image_id'])) {
-		$attachment = get_post($atts['image_id']);
-		$attachment_attrs = wp_get_attachment_image_src( $attachment->ID, 'thumbnail' );
-	}
-
 	$id = uniqid();
 
 	$marker_latlng = explode( ',', $atts['marker_co'] );
 	$popup_content = !empty($atts['aux_content']) ? $atts['aux_content'] : '';
 	$popup_content = nl2br($popup_content);
+	$popup_open = !empty($atts['infobox_open']) ? 'true' : 'false';
 	$breaks = array("\r\n", "\n", "\r");
 	$popup_content_no_breaks = str_replace($breaks, "", $popup_content);
 
-
-	$output .= "var place_".esc_attr($id)."= { marker : { position:{ lat:".esc_attr($marker_latlng[0]).", lng:".esc_attr($marker_latlng[1])." }, icon:'".(!empty($attachment_attrs) ? esc_attr($attachment_attrs[0]) : '')."' }, infoWindow: { content:'".esc_attr($popup_content_no_breaks)."' } }; places.push(place_".esc_attr($id)."); ";
+	if (!empty($atts['image_id'])) {
+		$attachment = get_post($atts['image_id']);
+		$attachment_attrs = wp_get_attachment_image_src( $attachment->ID, 'thumbnail' );
+		$marker_anchor_position = !empty($atts['marker_anchor_point_position']) ? $atts['marker_anchor_point_position'] : 'bottom_center';
+		$output .= "var place_".esc_attr($id)."= { marker : { position:{ lat:".esc_attr($marker_latlng[0]).", lng:".esc_attr($marker_latlng[1])." }, icon: { url:'".(!empty($attachment_attrs) ? esc_attr($attachment_attrs[0]) : '')."', width: '".(!empty($attachment_attrs) ? esc_attr($attachment_attrs[1]) : '')."', height: '".(!empty($attachment_attrs) ? esc_attr($attachment_attrs[2]) : '')."', anchorPosition: '". esc_attr($marker_anchor_position) ."' } }, infoWindow: { content:'".esc_attr($popup_content_no_breaks)."', open:'". esc_attr($popup_open) ."' } }; places.push(place_".esc_attr($id)."); ";
+	} else {
+		$output .= "var place_".esc_attr($id)."= { marker : { position:{ lat:".esc_attr($marker_latlng[0]).", lng:".esc_attr($marker_latlng[1])." }, }, infoWindow: { content:'".esc_attr($popup_content_no_breaks)."', open:'". esc_attr($popup_open) ."' } }; places.push(place_".esc_attr($id)."); ";
+	}
 
 	return $output;
 }
