@@ -330,11 +330,11 @@ class FusionMap	{
 						array(
 							'type' => 'select',
 							'options' => array(
-								'bottom_center' => __('Bottom Center', 'fusion-extension-content-roll-map'),
-								'center' => __('Center', 'fusion-extension-content-roll-map')
+								'bottom_center' => __('Bottom Center', 'fusion-extension-map'),
+								'center' => __('Center', 'fusion-extension-map')
 							),
 							'param_name' => 'marker_anchor_point_position',
-							'label' => __('Anchor Point Position', 'fusion-extension-content-roll-map'),
+							'label' => __('Anchor Point Position', 'fusion-extension-map'),
 							'help' => __('Choose anchor point position from the custom marker image.', 'fusion-extension-map'),
 						),
 						array(
