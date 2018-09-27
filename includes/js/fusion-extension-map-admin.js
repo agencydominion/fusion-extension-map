@@ -5,60 +5,59 @@
 //init map
 jQuery(document).ready(function() {
 	jQuery('body').on('show.bs.modal', '#fsn_map_modal', function(e) {
-		var map = jQuery('#fsn_map_modal');
-		var selectLayoutElement = jQuery('[name="map_layout"]');
+		var mapModal = jQuery(this);
+		var selectLayoutElement = mapModal.find('[name="map_layout"]');
 		var selectedLayout = selectLayoutElement.val();
-		
-		map.attr('data-layout', selectedLayout);
+		mapModal.attr('data-layout', selectedLayout);
 	});
 });
 
 //update map function
 jQuery(document).ready(function() {
 	jQuery('body').on('change', 'select[name="map_layout"]', function(e) {
-		fsnUpdatemap(e);
+		fsnUpdateMap(e);
 	});
 });
 
-function fsnUpdatemap(event) {
-	var selectLayoutElement = jQuery(event.target);		
+function fsnUpdateMap(event) {
+	var selectLayoutElement = jQuery(event.target);
 	var selectedLayout = selectLayoutElement.val();
-	var map = jQuery('#fsn_map_modal');
-	var currentLayout = map.attr('data-layout');
+	var mapModal = selectLayoutElement.closest('.modal');
+	var currentLayout = mapModal.attr('data-layout');
 	if (currentLayout != '' && currentLayout != selectedLayout) {
 		var r = confirm(fsnExtMapL10n.layout_change);
-		if (r == true) {			
-			map.attr('data-layout', selectedLayout);
-			fsnUpdateMapLayout();
+		if (r == true) {
+			mapModal.attr('data-layout', selectedLayout);
+			fsnUpdateMapLayout(mapModal);
 		} else {
 			selectLayoutElement.find('option[value="'+ currentLayout +'"]').prop('selected', true);
 		}
 	} else {
-		map.attr('data-layout', selectedLayout);
-		fsnUpdateMapLayout();
+		mapModal.attr('data-layout', selectedLayout);
+		fsnUpdateMapLayout(mapModal);
 	}
 }
 
 //update map layout
-function fsnUpdateMapLayout() {
+function fsnUpdateMapLayout(mapModal) {
 	var postID = jQuery('input#post_ID').val();
-	var mapLayout = jQuery('[name="map_layout"]').val();
-	
+	var mapLayout = mapModal.find('[name="map_layout"]').val();
+
 	var data = {
 		action: 'map_load_layout',
 		map_layout: mapLayout,
 		post_id: postID,
 		security: fsnExtMapJS.fsnEditMapNonce
 	};
-	jQuery.post(ajaxurl, data, function(response) {	
+	jQuery.post(ajaxurl, data, function(response) {
 		if (response == '-1') {
 			alert(fsnExtMapL10n.error);
 			return false;
 		}
-		
-		jQuery('#fsn_map_modal .tab-pane .form-group.map-layout').remove();
+
+		mapModal.find('.tab-pane .form-group.map-layout').remove();
 		if (response !== null) {
-			jQuery('#fsn_map_modal .tab-pane').each(function() {
+			mapModal.find('.tab-pane').each(function() {
 				var tabPane = jQuery(this);
 				if (tabPane.attr('data-section-id') == 'general') {
 					tabPane.find('.form-group').first().after('<div class="layout-fields"></div>');
@@ -67,22 +66,22 @@ function fsnUpdateMapLayout() {
 				}
 			});
 			for(i=0; i < response.length; i++) {
-				jQuery('#fsn_map_modal .tab-pane[data-section-id="'+ response[i].section +'"] .layout-fields').append(response[i].output);
+				mapModal.find('.tab-pane[data-section-id="'+ response[i].section +'"] .layout-fields').append(response[i].output);
 			}
-			jQuery('#fsn_map_modal .tab-pane').each(function() {
+			mapModal.find('.tab-pane').each(function() {
 				var tabPane = jQuery(this);
 				tabPane.find('.map-layout').first().unwrap();
 				tabPane.find('.layout-fields:empty').remove();
 				//toggle panel tabs visibility
-				var tabPaneId = tabPane.attr('id'); 
+				var tabPaneId = tabPane.attr('id');
 				if (tabPane.is(':empty')) {
-					jQuery('a[data-toggle="tab"][href="#'+ tabPaneId +'"]').parent('li').hide();
+					mapModal.find('a[data-toggle="tab"][href="#'+ tabPaneId +'"]').parent('li').hide();
 				} else {
-					jQuery('a[data-toggle="tab"][href="#'+ tabPaneId +'"]').parent('li').show();
+					mapModal.find('a[data-toggle="tab"][href="#'+ tabPaneId +'"]').parent('li').show();
 				}
 			});
 		}
-		var modalSelector = jQuery('#fsn_map_modal');
+		var modalSelector = mapModal;
 		//reinit tinyMCE
 		if (jQuery('#fsncontent').length > 0) {
 			//make compatable with TinyMCE 4 which is used starting with WordPress 3.9
@@ -94,9 +93,9 @@ function fsnUpdateMapLayout() {
 			var $element = jQuery('#fsncontent');
 	        var qt, textfield_id = $element.attr("id"),
 	            content = '';
-	
+
 	        window.tinyMCEPreInit.mceInit[textfield_id] = _.extend({}, tinyMCEPreInit.mceInit['content']);
-	
+
 	        if(_.isUndefined(tinyMCEPreInit.qtInit[textfield_id])) {
 	            window.tinyMCEPreInit.qtInit[textfield_id] = _.extend({}, tinyMCEPreInit.qtInit['replycontent'], {id: textfield_id})
 	        }
@@ -109,7 +108,7 @@ function fsnUpdateMapLayout() {
 	        //focus on this RTE
 	        tinyMCE.get('fsncontent').focus();
 			//destroy tinyMCE
-			modalSelector.on('hidden.bs.modal', function() {					
+			modalSelector.on('hidden.bs.modal', function() {
 				//make compatable with TinyMCE 4 which is used starting with WordPress 3.9
 				if(tinymce.majorVersion === "4") {
 					tinymce.execCommand('mceRemoveEditor', true, 'fsncontent');
@@ -122,11 +121,11 @@ function fsnUpdateMapLayout() {
 		setDependencies(modalSelector);
 		//trigger item added event
 		jQuery('body').trigger('fsnMapUpdated');
-	});	
+	});
 }
 
 //For select2 fields inside map items
-jQuery(document).ready(function() {	
+jQuery(document).ready(function() {
 	jQuery('body').on('fsnMapUpdated', function(e) {
 		fsnInitPostSelect();
 	});
