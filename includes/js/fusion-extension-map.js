@@ -27,8 +27,6 @@ function fsn_google_maps_init(lat,lng,mapID,places,zoomLevel,mapType,zoomControl
 
 	mapStyles = JSON.parse(mapStyles);
 
-	var isDraggable = Modernizr.touchevents ? false : true;
-
 	var options = {
 	    center: latlng,
 	    mapTypeId: mapType,
@@ -45,9 +43,8 @@ function fsn_google_maps_init(lat,lng,mapID,places,zoomLevel,mapType,zoomControl
 	    scaleControl: scaleControl,
 	    streetViewControl: false,
 	    zoom: zoomLevel,
-	    draggable: isDraggable,
-	    scrollwheel: false,
-	    styles: mapStyles
+			gestureHandling: 'cooperative',
+	    styles: mapStyles,
 	};
 	var map = new google.maps.Map(document.getElementById(mapID), options);
 	for (i = 0; i < places.length; i++) {
