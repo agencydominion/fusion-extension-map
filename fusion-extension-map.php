@@ -35,6 +35,9 @@ class FusionExtensionMap	{
 		// Enqueue front end scripts and styles
 		add_action('wp_enqueue_scripts', array($this, 'front_enqueue_scripts_styles'));
 
+		// Add ASYNC attribute to Google Maps Script
+		add_filter('script_loader_tag', array($this, 'add_async_attribute'), 10, 3);
+
 		// Add Settings
 		add_action('admin_init', array($this, 'register_fusion_map_settings'), 11);
 
@@ -89,9 +92,27 @@ class FusionExtensionMap	{
 	 */
 
 	public function front_enqueue_scripts_styles() {
+		//google maps
+		$fsn_google_maps_api_key = $this->fsn_get_google_maps_api_key();
+		$google_maps_script_url = 'https://maps.googleapis.com/maps/api/js'. (!empty($fsn_google_maps_api_key) ? '?key=' . esc_attr($fsn_google_maps_api_key) : '');
+		wp_register_script( 'google_maps_api', $google_maps_script_url, array(), false, true );
 		//plugin
 		wp_register_script( 'fsn_map', plugin_dir_url( __FILE__ ) . 'includes/js/fusion-extension-map.js', array('jquery'), '1.0.0', true );
 		wp_enqueue_style( 'fsn_map', plugin_dir_url( __FILE__ ) . 'includes/css/fusion-extension-map.css', false, '1.0.0' );
+	}
+
+	/**
+	 * Add ASYNC attribute to Google Maps API script
+	 *
+	 * @since 1.5.1
+	 *
+	 */
+
+	public function add_async_attribute($tag, $handle, $src) {
+		if ($handle == 'google_maps_api') {
+			$tag = '<script src="'. esc_attr($src) .'" async></script>';
+		}
+		return $tag;
 	}
 
 	/**

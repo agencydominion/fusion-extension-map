@@ -484,17 +484,15 @@ function fsn_get_google_map_custom_map($atts = false, $content = false) {
 	 * Enqueue Scripts
 	 */
 
-	add_action('wp_footer', 'fsn_google_maps_api_script', 10);
-
 	$id = uniqid();
 
 	//plugin
+	wp_enqueue_script('google_maps_api');
 	wp_enqueue_script('fsn_map');
 
 	$zoom_control = !empty($zoom_control) ? 'true' : 'false';
 	$type_control = !empty($type_control) ? 'true' : 'false';
 	$scale_control = !empty($scale_control) ? 'true' : 'false';
-
 
 	$output = '<div class="fsn-googlemap_container_'.esc_attr($id).'" id="fsn_googlemap_'.esc_attr($id).'" style="width:100%;height:' . esc_attr($map_height) . ';"></div>';
 
@@ -539,10 +537,4 @@ function fsn_get_google_map_marker_list_item($atts = false, $content = false) {
 	return $output;
 }
 
-function fsn_google_maps_api_script(){
-	$fsn_google_maps_api_key = FusionExtensionMap::fsn_get_google_maps_api_key();
-	?>
-	<script src='https://maps.googleapis.com/maps/api/js<?php echo !empty($fsn_google_maps_api_key) ? '?key=' . esc_attr($fsn_google_maps_api_key) : ''; ?>' async></script>
-	<?php
-}
 ?>
