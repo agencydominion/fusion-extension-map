@@ -506,7 +506,7 @@ function fsn_get_google_map_custom_map($atts = false, $content = false) {
 	$fsn_google_map_marker_links_output = '<nav aria-label="' . __('Google Maps Links', 'fusion-extension-map') . '" class="sr-only">';
 	$fsn_google_map_marker_links_output .= '<ul>';
 
-	$output = '<div class="fsn-googlemap_container_'.esc_attr($id).'" id="fsn_googlemap_'.esc_attr($id).'" aria-hidden="true" style="width:100%;height:' . esc_attr($map_height) . ';"></div>';
+	$output = '<div class="fsn-googlemap_container_'.esc_attr($id).'" id="fsn_googlemap_'.esc_attr($id).'"' . ($screen_reader_output == 'true' ? ' aria-hidden="true"' : '') . ' style="width:100%;height:' . esc_attr($map_height) . ';"></div>';
 
 	ob_start();
 	?>
