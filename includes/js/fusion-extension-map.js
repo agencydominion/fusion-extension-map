@@ -81,6 +81,24 @@ function fsn_google_maps_init(lat,lng,mapID,places,zoomLevel,mapType,zoomControl
       infowindow.open(map, this);
     });
 	}
+
+	//Remove tabindex from map items
+	if(fsn_google_map_screen_reader == true) {
+		google.maps.event.addListener(map, "tilesloaded", function(){
+			window.setTimeout(() => {
+				[].slice.apply(document.getElementById(mapID).querySelectorAll('button')).forEach(function(item) {
+					item.setAttribute('tabindex','-1');
+				});
+				[].slice.apply(document.getElementById(mapID).querySelectorAll('a')).forEach(function(item) {
+					item.setAttribute('tabindex','-1');
+				});
+				[].slice.apply(document.getElementById(mapID).querySelectorAll('div')).forEach(function(item) {
+					item.setAttribute('tabindex','-1');
+				});
+			}, 500);
+		})
+	}
+
 	//recenter map on resize
 	google.maps.event.addDomListener(window, "resize", function() {
 		var center = map.getCenter();
