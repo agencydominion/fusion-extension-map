@@ -436,7 +436,13 @@ class FusionMap	{
 					'label' => __('Map Styles', 'fusion-extension-map'),
 					'help' => __('Input a custom styles array (e.g. from Snazzy Maps) to change the map appearance.', 'fusion-extension-map'),
 					'section' => 'style'
-				)
+				),
+				array(
+					'type' => 'checkbox',
+					'param_name' => 'screen_reader_output',
+					'label' => __('Screen Reader Output', 'fusion-extension-map'),
+					'section' => 'advanced'
+				),
 			)
 		);
 		$map_layouts['google_map_custom'] = $google_map_custom;
@@ -477,7 +483,8 @@ function fsn_get_google_map_custom_map($atts = false, $content = false) {
 		'typecontrol_style' => 'DEFAULT',
 		'type_pos' => 'google.maps.ControlPosition.TOP_RIGHT',
 		'scale_control' => '',
-		'map_styles' => '[]'
+		'map_styles' => '[]',
+		'screen_reader_output' => ''
 	), $atts));
 
 	/**
@@ -493,12 +500,18 @@ function fsn_get_google_map_custom_map($atts = false, $content = false) {
 	$zoom_control = !empty($zoom_control) ? 'true' : 'false';
 	$type_control = !empty($type_control) ? 'true' : 'false';
 	$scale_control = !empty($scale_control) ? 'true' : 'false';
+	$screen_reader_output = !empty($screen_reader_output) ? 'true' : 'false';
 
-	$output = '<div class="fsn-googlemap_container_'.esc_attr($id).'" id="fsn_googlemap_'.esc_attr($id).'" style="width:100%;height:' . esc_attr($map_height) . ';"></div>';
+	global $fsn_google_map_marker_links_output;
+	$fsn_google_map_marker_links_output = '<nav aria-label="' . __('Google Maps Links', 'fusion-extension-map') . '" class="sr-only">';
+	$fsn_google_map_marker_links_output .= '<ul>';
+
+	$output = '<div class="fsn-googlemap_container_'.esc_attr($id).'" id="fsn_googlemap_'.esc_attr($id).'" aria-hidden="true" style="width:100%;height:' . esc_attr($map_height) . ';"></div>';
 
 	ob_start();
 	?>
 	<script type="text/javascript">
+		var fsn_google_map_screen_reader = <?php echo $screen_reader_output; ?>;
 		jQuery(window).on('load', function(){
 			if (typeof google === 'object' && typeof google.maps === 'object') {
 				var places = [];
@@ -509,11 +522,15 @@ function fsn_get_google_map_custom_map($atts = false, $content = false) {
 	</script>
 	<?php
 	$output .= ob_get_clean();
-
+	$fsn_google_map_marker_links_output .= '</ul></nav>';
+	$output .= $screen_reader_output ? $fsn_google_map_marker_links_output : '';
 	return $output;
+	unset($GLOBALS['fsn_google_map_marker_links_output']);
 }
 //render list item ** function name must follow fsn_get_[list_id]_list_item
 function fsn_get_google_map_marker_list_item($atts = false, $content = false) {
+	global $fsn_google_map_marker_links_output;
+
 	$output = '';
 
 	$id = uniqid();
@@ -524,17 +541,20 @@ function fsn_get_google_map_marker_list_item($atts = false, $content = false) {
 	$popup_open = !empty($atts['infobox_open']) ? 'true' : 'false';
 	$breaks = array("\r\n", "\n", "\r");
 	$popup_content_no_breaks = str_replace($breaks, "", $popup_content);
+	$content_text = wp_strip_all_tags(FusionCore::decode_custom_entities($popup_content_no_breaks));
 
 	if (!empty($atts['image_id'])) {
 		$attachment = get_post($atts['image_id']);
 		$attachment_attrs = wp_get_attachment_image_src( $attachment->ID, 'thumbnail' );
 		$marker_anchor_position = !empty($atts['marker_anchor_point_position']) ? $atts['marker_anchor_point_position'] : 'bottom_center';
-		$output .= "var place_".esc_attr($id)."= { marker : { position:{ lat:".esc_attr($marker_latlng[0]).", lng:".esc_attr($marker_latlng[1])." }, icon: { url:'".(!empty($attachment_attrs) ? esc_attr($attachment_attrs[0]) : '')."', width: '".(!empty($attachment_attrs) ? esc_attr($attachment_attrs[1]) : '')."', height: '".(!empty($attachment_attrs) ? esc_attr($attachment_attrs[2]) : '')."', anchorPosition: '". esc_attr($marker_anchor_position) ."' } }, infoWindow: { content:'".esc_attr($popup_content_no_breaks)."', open:'". esc_attr($popup_open) ."' } }; places.push(place_".esc_attr($id)."); ";
+		$output .= "var place_".esc_attr($id)."= { marker : { position:{ lat:".esc_attr($marker_latlng[0]).", lng:".esc_attr($marker_latlng[1])." }, icon: { url:'".(!empty($attachment_attrs) ? esc_attr($attachment_attrs[0]) : '')."', width: '".(!empty($attachment_attrs) ? esc_attr($attachment_attrs[1]) : '')."', height: '".(!empty($attachment_attrs) ? esc_attr($attachment_attrs[2]) : '')."', anchorPosition: '". esc_attr($marker_anchor_position) ."' } }, infoWindow: { content:'".esc_attr($popup_content_no_breaks)."', open:'". esc_attr($popup_open) ."' }, title:'".esc_attr($content_text)."' }; places.push(place_".esc_attr($id)."); ";
 	} else {
-		$output .= "var place_".esc_attr($id)."= { marker : { position:{ lat:".esc_attr($marker_latlng[0]).", lng:".esc_attr($marker_latlng[1])." }, }, infoWindow: { content:'".esc_attr($popup_content_no_breaks)."', open:'". esc_attr($popup_open) ."' } }; places.push(place_".esc_attr($id)."); ";
+		$output .= "var place_".esc_attr($id)."= { marker : { position:{ lat:".esc_attr($marker_latlng[0]).", lng:".esc_attr($marker_latlng[1])." }, }, infoWindow: { content:'".$popup_content_no_breaks."', open:'". esc_attr($popup_open) ."' }, title:'".esc_attr($content_text)."' }; places.push(place_".esc_attr($id)."); ";
 	}
-
+	$map_link_text_format = __('View %s on Google Maps', 'fusion-extension-map');
+	$fsn_google_map_marker_links_output .= '<li><a href="https://www.google.com/maps/search/?api=1&query='.esc_attr($marker_latlng[0]).','.esc_attr($marker_latlng[1]).'" tabindex="-1">' . sprintf($map_link_text_format, $content_text) . '</a></li>';
 	return $output;
+	unset($GLOBALS['fsn_google_map_marker_links_output']);
 }
 
 ?>
