@@ -6,7 +6,7 @@
  * Plugin Name: Fusion : Extension - Map
  * Plugin URI: https://www.agencydominion.com/fusion/
  * Description: Map Extension Package for Fusion.
- * Version: 1.6.0
+ * Version: 1.6.1
  * Author: Agency Dominion
  * Author URI: https://www.agencydominion.com
  * Text Domain: fusion-extension-map
