@@ -70,21 +70,38 @@ function fsn_google_maps_init(lat,lng,mapID,places,zoomLevel,mapType,zoomControl
 			infowindow.open(map, marker);
 			// var center = map.getCenter();
 			// map.setCenter(center);
+			infowindow.addListener('closeclick', ()=>{
+				if(fsn_google_map_screen_reader == true) {
+					fsnGoogleMapRemoveTabindex();
+				}
+			});
 		}
 		google.maps.event.addListener(marker, 'click', function() {
+			fsnGoogleMapRemoveTabindex();
 			if (infowindow) {
 				infowindow.close();
 			}
 			infowindow = new google.maps.InfoWindow({
 				content: this.content
 			});
-      infowindow.open(map, this);
-    });
+			infowindow.open(map, this);
+			infowindow.addListener('closeclick', ()=>{
+				if(fsn_google_map_screen_reader == true) {
+					fsnGoogleMapRemoveTabindex();
+				}
+			});
+		});
 	}
 
 	//Remove tabindex from map items
 	if(fsn_google_map_screen_reader == true) {
 		google.maps.event.addListener(map, "tilesloaded", function(){
+			fsnGoogleMapRemoveTabindex();
+		});
+		google.maps.event.addListener(map, "idle", function(){
+			fsnGoogleMapRemoveTabindex();
+		});
+		function fsnGoogleMapRemoveTabindex() {
 			window.setTimeout(() => {
 				[].slice.apply(document.getElementById(mapID).querySelectorAll('button')).forEach(function(item) {
 					item.setAttribute('tabindex','-1');
@@ -96,7 +113,7 @@ function fsn_google_maps_init(lat,lng,mapID,places,zoomLevel,mapType,zoomControl
 					item.setAttribute('tabindex','-1');
 				});
 			}, 500);
-		})
+		}
 	}
 
 	//recenter map on resize
